@@ -266,6 +266,17 @@
                 },
                 {
                     "name": "",
+                    "id": "fd79cf40-859d-43c3-a617-2c3c153fd3ff",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Attack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "69409ae8-2699-468e-9140-1b2e9b1f9931",
                     "path": "<Keyboard>/space",
                     "interactions": "",

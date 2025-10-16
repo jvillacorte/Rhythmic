@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,13 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     // Player movement variables
+    AudioManager audioManager;
+
+    private void Awake()
+    {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+    }
+
     public Rigidbody2D rb;
 
     //adjustable speed variable
@@ -90,6 +98,7 @@ public class PlayerController : MonoBehaviour
         {
             //jumping force
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            audioManager.PlaySFX(audioManager.jumpSound);
         }
     }
 
@@ -102,10 +111,12 @@ public class PlayerController : MonoBehaviour
                 if (!isGrounded)
                 {
                     _animator.SetBool("isAirAttacking", true);
+                    audioManager.PlaySFX(audioManager.airAttackSound);
                 }
                 else
                 {
                     _animator.SetBool("isAttacking", true);
+                    audioManager.PlaySFX(audioManager.atkSound);
                 }
 
                 //attack animation, resets cooldown timer
