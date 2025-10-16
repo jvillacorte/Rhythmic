@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     // Player movement variables
     public Rigidbody2D rb;
-    
+
     //adjustable speed variable
     public float moveSpeed = 5f;
     //adjustable jump force variable
@@ -28,6 +28,7 @@ public class PlayerController : MonoBehaviour
     bool facingRight = true;
     // Attack hitbox reference
     public GameObject attackHitbox;
+    public GameObject airAttackHitbox;
 
     public float attackCooldown = 0.5f; // Time in seconds between attacks
     private float lastAttackTime = 0f; // Time since the last attack was performed
@@ -36,7 +37,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-    // Ground check
+        // Ground check
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, groundLayer);
 
         // Determine current movement speed
@@ -68,17 +69,17 @@ public class PlayerController : MonoBehaviour
 
     public void Move(InputAction.CallbackContext context)
     {
-            //running animation
-            horizontalMovement = context.ReadValue<Vector2>().x;
+        //running animation
+        horizontalMovement = context.ReadValue<Vector2>().x;
 
-            if (horizontalMovement != 0)
-            {
-                _animator.SetBool("isRunning", true);
-            }
-            else
-            {
-                _animator.SetBool("isRunning", false);
-            }
+        if (horizontalMovement != 0)
+        {
+            _animator.SetBool("isRunning", true);
+        }
+        else
+        {
+            _animator.SetBool("isRunning", false);
+        }
     }
 
     public void Jump(InputAction.CallbackContext context)
@@ -94,12 +95,20 @@ public class PlayerController : MonoBehaviour
 
     public void Attack(InputAction.CallbackContext context)
     {
-        if (context.performed && isGrounded)
+        if (context.performed)
         {
             if (Time.time >= lastAttackTime + attackCooldown && !_animator.GetBool("isAttacking"))
             {
+                if (!isGrounded)
+                {
+                    _animator.SetBool("isAirAttacking", true);
+                }
+                else
+                {
+                    _animator.SetBool("isAttacking", true);
+                }
+
                 //attack animation, resets cooldown timer
-                _animator.SetBool("isAttacking", true);
                 lastAttackTime = Time.time; // reset cooldown timer
                 Debug.Log("Attack performed");
             }
@@ -110,6 +119,14 @@ public class PlayerController : MonoBehaviour
     {
         //animation event to end attack animation, turns off hitbox
         _animator.SetBool("isAttacking", false);
+        Debug.Log("Attack ended");
+    }
+
+    public void endAirAttack()
+    {
+        //animation event to end air attack animation, turns off hitbox
+        _animator.SetBool("isAirAttacking", false);
+        Debug.Log("Air Attack ended");
     }
 
     void FixedUpdate()
@@ -134,15 +151,13 @@ public class PlayerController : MonoBehaviour
         facingRight = !facingRight;
     }
 
-    public void enableHitbox()
+    public void SetHitboxEnabled(GameObject hitbox, bool enabled)
     {
-        //enables player attack hitbox
-        attackHitbox.GetComponent<Collider2D>().enabled = true;
+        hitbox.GetComponent<Collider2D>().enabled = enabled;
     }
-
-    public void disableHitbox()
-    {
-        //disables player attack hitbox
-        attackHitbox.GetComponent<Collider2D>().enabled = false;
-    }
+    public void EnableHitbox() => SetHitboxEnabled(attackHitbox, true);
+    public void DisableHitbox() => SetHitboxEnabled(attackHitbox, false);
+    public void EnableAirHitbox() => SetHitboxEnabled(airAttackHitbox, true);
+    public void DisableAirHitbox() => SetHitboxEnabled(airAttackHitbox, false);
 }
+
