@@ -146,6 +146,8 @@ public class Enemy : MonoBehaviour
 
     void Die()
     {
+        Debug.Log("Portal Released");
+        GameState.EnemyHasDied();
         isDead = true;
         Debug.Log("Enemy died!");
         animator.SetTrigger("Die");

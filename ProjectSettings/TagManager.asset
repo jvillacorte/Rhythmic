@@ -61,5 +61,8 @@ TagManager:
   - name: 4Foreground
     uniqueID: 1578907849
     locked: 0
+  - name: 5Trees
+    uniqueID: 3012885921
+    locked: 0
   m_RenderingLayers:
   - Default

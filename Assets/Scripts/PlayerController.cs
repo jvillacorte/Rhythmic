@@ -1,4 +1,3 @@
-using Microsoft.Unity.VisualStudio.Editor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -119,6 +118,7 @@ public class PlayerController : MonoBehaviour
     {
         isDead = true;
         _animator.SetTrigger("Die");
+        Invoke(nameof(DestroyAfterDeath), 1.2f);
         
     }
 
