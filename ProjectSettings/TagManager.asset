@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Audio
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -13,7 +14,7 @@ TagManager:
   - Water
   - UI
   - Ground
-  - 
+  - Enemy
   - 
   - 
   - 
@@ -53,6 +54,9 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 2447523723
+    locked: 0
+  - name: Enemy
+    uniqueID: 1458131447
     locked: 0
   - name: 4Foreground
     uniqueID: 1578907849

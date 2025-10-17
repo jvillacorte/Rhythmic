@@ -1,20 +1,28 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using Microsoft.Unity.VisualStudio.Editor;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
     // Player movement variables
+
+    public UnityEngine.UI.Image healthBar;
     AudioManager audioManager;
 
     private void Awake()
     {
         audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+
+        currentHealth = maxHealth;
+        UpdateHealthBar();
     }
 
     public Rigidbody2D rb;
+
+    public int groundAttackDamage = 20;
+    public int airAttackDamage = 30;
 
     //adjustable speed variable
     public float moveSpeed = 5f;
@@ -42,6 +50,10 @@ public class PlayerController : MonoBehaviour
     private float lastAttackTime = 0f; // Time since the last attack was performed
 
     public float attackMoveMult = 0.5f;
+
+    public int maxHealth = 100;
+    private int currentHealth;
+    private bool isDead = false;
 
     void Update()
     {
@@ -73,6 +85,41 @@ public class PlayerController : MonoBehaviour
         {
             _animator.SetBool("isAttacking", false);
         }
+    }
+
+    void UpdateHealthBar()
+    {
+        if (healthBar != null)
+        {
+            healthBar.fillAmount = (float)currentHealth / maxHealth;
+        }
+    }
+
+    public void TakeDamage(int damage)
+    {
+        if (isDead) return;
+        currentHealth -= damage;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        UpdateHealthBar();
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    public void Heal(int amount)
+    {
+        currentHealth += amount;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        UpdateHealthBar();
+    }
+
+    private void Die()
+    {
+        isDead = true;
+        _animator.SetTrigger("Die");
+        
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -170,5 +217,58 @@ public class PlayerController : MonoBehaviour
     public void DisableHitbox() => SetHitboxEnabled(attackHitbox, false);
     public void EnableAirHitbox() => SetHitboxEnabled(airAttackHitbox, true);
     public void DisableAirHitbox() => SetHitboxEnabled(airAttackHitbox, false);
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        //checks if the attack hits an enemy tagged with "Enemy"
+        //if so, calls the takeDamage function in the enemy script
+        //deals 20 damage, enemy can take 5 hits before dying
+        if (collision.CompareTag("Enemy"))
+        {
+            if (attackHitbox.GetComponent<Collider2D>().enabled)
+            {
+                collision.GetComponent<Enemy>().takeDamage(groundAttackDamage);
+            }
+            else if (airAttackHitbox.GetComponent<Collider2D>().enabled)
+            {
+                collision.GetComponent<Enemy>().takeDamage(airAttackDamage);
+            }
+        }
+    }
+
+    public void TakeDamageInput(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            TakeDamage(10); // Example damage amount
+            Debug.Log("Damage taken via input");
+        }
+    }
+
+    public void HealInput(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            Heal(10); // Example heal amount
+            Debug.Log("Healed via input");
+        }
+    }
+
+    public void DestroyAfterDeath()
+    {
+        Debug.Log("Die called - starting death sequence.");
+        SceneManager.LoadScene(2);
+        Debug.Log("Load Game Over");
+
+        GetComponent<Collider2D>().enabled = false;
+        GetComponent<Rigidbody2D>().simulated = false;
+
+        //called at end of death animation to destroy enemy object
+        //had some weird issues where it wouldn't destroy properly
+        //so added a debug log to confirm it was being called
+        Debug.Log("Destroying player object.");
+        // Destroy(gameObject);
+    }
+
 }
 
