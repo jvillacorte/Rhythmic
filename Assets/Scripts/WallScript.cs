@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class WallScript : MonoBehaviour
 {
+    //Meant to be added to a wall that would disappear on enemy death
+    //Ran out of time to properly utilize
     private void OnEnable()
     {
         GameState.OnEnemyKilled += HandleEnemyKilled;

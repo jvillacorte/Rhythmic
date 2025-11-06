@@ -10,6 +10,8 @@ public class PauseMenu : MonoBehaviour
     //player from moving or attacking when paused
     public static bool isPaused;
 
+    public GameObject optionsPanel;
+
     private void Start()
     {
         // Ensure the pause menu is hidden at the start, and game is not paused
@@ -19,12 +21,17 @@ public class PauseMenu : MonoBehaviour
     // This function will be called by the PlayerInput component
     public void OnPause(InputAction.CallbackContext context)
     {
-        if (context.performed) // only trigger once per key press
+        if (context.performed)
         {
+            // If options panel is open, ignore pause/unpause input
+            if (optionsPanel != null && optionsPanel.activeSelf)
+            {
+                Debug.Log("Cannot unpause while options menu is open");
+                return;
+            }
+
             if (isPaused)
             {
-                // :( this doesn't work with esc
-                Debug.Log("Pause input received"); 
                 ResumeGame();
             }
             else
@@ -33,6 +40,7 @@ public class PauseMenu : MonoBehaviour
             }
         }
     }
+
 
     public void PauseGame()
     {

@@ -88,6 +88,7 @@ public class PlayerController : MonoBehaviour
 
     void UpdateHealthBar()
     {
+        //if health bar DOES exist, fill health bar by current/max (something like 70/100)
         if (healthBar != null)
         {
             healthBar.fillAmount = (float)currentHealth / maxHealth;
@@ -96,6 +97,7 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        //Update's health bar based on damage taken, similar to heal using K
         if (isDead) return;
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
@@ -109,6 +111,7 @@ public class PlayerController : MonoBehaviour
 
     public void Heal(int amount)
     {
+        //Method I added for health bar purposes (use J to heal)
         currentHealth += amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
         UpdateHealthBar();
@@ -116,6 +119,8 @@ public class PlayerController : MonoBehaviour
 
     private void Die()
     {
+        //Starts the death animation for death, starting a 
+        //method to destroy player object after death
         isDead = true;
         _animator.SetTrigger("Die");
         Invoke(nameof(DestroyAfterDeath), 1.2f);
@@ -124,6 +129,7 @@ public class PlayerController : MonoBehaviour
 
     public void Move(InputAction.CallbackContext context)
     {
+        if (Time.timeScale == 0) return;
         //running animation
         horizontalMovement = context.ReadValue<Vector2>().x;
 
@@ -140,6 +146,8 @@ public class PlayerController : MonoBehaviour
     public void Jump(InputAction.CallbackContext context)
     {
         //debug log to check if jump is being called, could probably delete
+        if (Time.timeScale == 0) return;
+
         Debug.Log($"Jump called. isGrounded: {isGrounded}, performed: {context.performed}");
         if (context.performed && isGrounded)
         {
@@ -151,6 +159,9 @@ public class PlayerController : MonoBehaviour
 
     public void Attack(InputAction.CallbackContext context)
     {
+        if (Time.timeScale == 0) return;
+
+        
         if (context.performed)
         {
             if (Time.time >= lastAttackTime + attackCooldown && !_animator.GetBool("isAttacking"))
@@ -213,6 +224,7 @@ public class PlayerController : MonoBehaviour
     {
         hitbox.GetComponent<Collider2D>().enabled = enabled;
     }
+    //Methods to enable/disable air/regular attack hitboxes
     public void EnableHitbox() => SetHitboxEnabled(attackHitbox, true);
     public void DisableHitbox() => SetHitboxEnabled(attackHitbox, false);
     public void EnableAirHitbox() => SetHitboxEnabled(airAttackHitbox, true);
@@ -269,6 +281,5 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Destroying player object.");
         // Destroy(gameObject);
     }
-
 }
 

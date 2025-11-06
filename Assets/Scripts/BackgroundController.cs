@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class BackgroundController : MonoBehaviour
 {
+    //Parallax Background Effect, changes X position at a variable rate
+    //in consideration to player X-position and a variable parllaxEffect
 
     private float startPos, length;
     public GameObject cam;
