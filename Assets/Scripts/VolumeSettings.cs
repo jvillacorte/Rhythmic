@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
@@ -8,20 +7,28 @@ public class VolumeSettings : MonoBehaviour
     [SerializeField] private AudioMixer myMixer;
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider SFXSlider;
-    [SerializeField] private Slider masterSlider; // New master volume slider
+    [SerializeField] private Slider masterSlider;
 
-    private void Start()
+    void Start()
     {
-        if (PlayerPrefs.HasKey("musicVolume") && PlayerPrefs.HasKey("SFXVolume") && PlayerPrefs.HasKey("masterVolume"))
-        {
-            LoadVolume();
-        }
-        else
-        {
-            SetMasterVolume();
-            SetMusicVolume();
-            SetSFXVolume();
-        }
+        // Load saved values
+        if (PlayerPrefs.HasKey("musicVolume")) musicSlider.value = PlayerPrefs.GetFloat("musicVolume");
+        if (PlayerPrefs.HasKey("SFXVolume")) SFXSlider.value = PlayerPrefs.GetFloat("SFXVolume");
+        if (PlayerPrefs.HasKey("masterVolume")) masterSlider.value = PlayerPrefs.GetFloat("masterVolume");
+
+        ApplyVolumes();
+
+        // Add listeners so sliders update mixer immediately
+        masterSlider.onValueChanged.AddListener((v) => SetMasterVolume());
+        musicSlider.onValueChanged.AddListener((v) => SetMusicVolume());
+        SFXSlider.onValueChanged.AddListener((v) => SetSFXVolume());
+    }
+
+    void ApplyVolumes()
+    {
+        SetMasterVolume();
+        SetMusicVolume();
+        SetSFXVolume();
     }
 
     public void SetMasterVolume()
@@ -43,16 +50,5 @@ public class VolumeSettings : MonoBehaviour
         float volume = SFXSlider.value;
         myMixer.SetFloat("sfx", Mathf.Log10(volume) * 20);
         PlayerPrefs.SetFloat("SFXVolume", volume);
-    }
-
-    private void LoadVolume()
-    {
-        masterSlider.value = PlayerPrefs.GetFloat("masterVolume", 1f); // default 1
-        musicSlider.value = PlayerPrefs.GetFloat("musicVolume", 1f);
-        SFXSlider.value = PlayerPrefs.GetFloat("SFXVolume", 1f);
-
-        SetMasterVolume();
-        SetMusicVolume();
-        SetSFXVolume();
     }
 }

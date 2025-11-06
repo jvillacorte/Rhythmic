@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Audio
   - Enemy
+  - Coin
   layers:
   - Default
   - TransparentFX
@@ -51,6 +52,9 @@ TagManager:
     locked: 0
   - name: 3Background
     uniqueID: 1314114511
+    locked: 0
+  - name: Pickups
+    uniqueID: 1686600251
     locked: 0
   - name: Player
     uniqueID: 2447523723

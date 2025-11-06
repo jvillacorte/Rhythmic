@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+        audioManager = AudioManager.instance;
 
         currentHealth = maxHealth;
         UpdateHealthBar();
@@ -53,6 +53,8 @@ public class PlayerController : MonoBehaviour
     public int maxHealth = 100;
     private int currentHealth;
     private bool isDead = false;
+
+    public CoinManager cm;
 
     void Update()
     {
@@ -244,6 +246,15 @@ public class PlayerController : MonoBehaviour
             else if (airAttackHitbox.GetComponent<Collider2D>().enabled)
             {
                 collision.GetComponent<Enemy>().takeDamage(airAttackDamage);
+            }
+        }   
+
+        if (collision.gameObject.CompareTag("Coin"))
+        {
+            if (collision.gameObject.CompareTag("Coin"))
+            {
+                Destroy(collision.gameObject);
+                cm.coinCount++;
             }
         }
     }
